@@ -1,12 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useContext } from 'react';
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import logo from '../../assets/devcode.png'
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import './light-mode.css';
 
+const ThemeContext = React.createContext(); 
 
-const Navbar = (props) => {
+class ThemeProvider extends React.Component {
+  state = { isDarkMode: true };
+  
+  toggleMode = () => {
+    const root = document.documentElement;
+    root.dataset.theme = this.state.isDarkMode ? 'dark' : 'light';
+    root.classList.toggle('dark', this.state.isDarkMode);
+    root.classList.toggle('light', !this.state.isDarkMode);
+    this.setState(state => ({ isDarkMode: !state.isDarkMode }));
+  }
+  
+  render() { 
+    return (
+      <ThemeContext.Provider value={{ ...this.state, toggleMode: this.toggleMode }}>
+        {this.props.children}
+      </ThemeContext.Provider>
+    );
+  }
+}
+export { ThemeContext, ThemeProvider };
+
+  const Navbar = (props) => {
+    const { isDarkMode, toggleMode } = useContext(ThemeContext);
+  
+    useEffect(() => {
+      toggleMode(); 
+    }, []); 
+
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [imageURI, setImageURI] = useState("");
 
@@ -41,6 +70,20 @@ const Navbar = (props) => {
         setIsLoggedIn(false);
       }
     }, []);
+
+    useEffect(() => {
+      // Toggle dark mode class on root element
+      const rootElement = document.documentElement;
+      rootElement.classList.toggle('dark', isDarkMode);
+      
+      // Toggle dark mode class on nav links
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        link.classList.toggle('dark', isDarkMode);
+      });
+    }, [isDarkMode]);  
+    
+    
     
     const navigation = [
         { name: 'Home', href: '/', current: (props.focus === "home") },
@@ -61,7 +104,7 @@ const Navbar = (props) => {
       
   return (
     <>
-        <Disclosure as="nav" className="bg-gray-800">
+        <Disclosure as="nav" className="bg-primary">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -178,13 +221,13 @@ const Navbar = (props) => {
                 <>
                   <Link to={'/login'} type="button" className="text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">Login</Link>
                   <Link to={'/register'} type="button" className="text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">Signup</Link>
+                  {/* <button type="button" onClick={() => setIsDarkMode(!isDarkMode)}>{isDarkMode ? 'Light' : 'Dark'}</button>                 */}
                 </>
                 }
               </div>
             </div>
           </div>
-
-          <Disclosure.Panel className="sm:hidden">
+          <Disclosure.Panel className="sm:hidden bg-secondary">
             <div className="space-y-1 px-2 pt-2 pb-3">
               {navigation.map((item) => (
                 <Disclosure.Button
@@ -208,5 +251,14 @@ const Navbar = (props) => {
     </>
   )
 }
+
+// function MainApp() {  
+//   return (
+//     <ThemeProvider>
+//        <Navbar /> 
+//        <RestOfApp /> {/* Add any other components here */}
+//     </ThemeProvider> 
+//   )  
+// }; 
 
 export default Navbar

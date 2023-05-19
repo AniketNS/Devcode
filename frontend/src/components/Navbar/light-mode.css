@@ -1,0 +1,45 @@
+/* light-mode.css */
+:root.light {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f8f8;
+    --text-primary: #1a202c;
+    --text-secondary: #2d3748;
+  }
+  [data-theme="light"] {
+    background: #fff; 
+    color: #333;
+  }
+  
+  [data-theme="light"] .some-class {
+    color: #333; 
+  }
+
+  .nav-link.light {
+    background: #fff; 
+  }
+  .bg-primary {
+    background-color: var(--bg-primary);
+  }
+  
+  .bg-secondary {
+    background-color: var(--bg-secondary);
+  }
+  
+  .text-primary {
+    color: var(--text-primary);
+  }
+  
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+  .light,
+[data-theme="light"] {
+  background: #fff; 
+  color: #333; 
+}
+
+.dark,  
+[data-theme="dark"] {
+  background: #333; 
+  color: #fff;
+}
